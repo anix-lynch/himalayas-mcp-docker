@@ -2,16 +2,18 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install system dependencies including Docker CLI
+# Install system dependencies (excluding doppler for now)
 RUN apk add --no-cache \
     python3 \
     py3-pip \
     git \
     curl \
     bash \
-    doppler \
     docker-cli \
     docker-compose
+
+# Install Doppler CLI separately (optional)
+RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh || echo "Doppler install failed, continuing without it"
 
 # Install global npm packages
 RUN npm install -g \
@@ -42,7 +44,6 @@ RUN chmod +x /app/scripts/*.sh
 # Set environment variables
 ENV NODE_ENV=production
 ENV MCP_HOME=/app
-ENV DOPPLER_TOKEN=${DOPPLER_TOKEN}
 
 # Expose ports for both MCP server and OpenAPI server
 EXPOSE 3000 5050
