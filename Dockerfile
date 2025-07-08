@@ -2,7 +2,7 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install system dependencies (excluding doppler for now)
+# Install system dependencies
 RUN apk add --no-cache \
     python3 \
     py3-pip \
@@ -12,19 +12,15 @@ RUN apk add --no-cache \
     docker-cli \
     docker-compose
 
-# Install Doppler CLI separately (optional)
-RUN curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sh || echo "Doppler install failed, continuing without it"
-
 # Install global npm packages
 RUN npm install -g \
     @modelcontextprotocol/server-filesystem \
     @modelcontextprotocol/server-github \
     @modelcontextprotocol/server-memory \
-    mcp-remote \
-    concurrently
+    mcp-remote
 
 # Install Python packages for Docker MCP
-RUN pip install docker-mcp
+RUN pip install docker-mcp --break-system-packages || pip install docker-mcp
 
 # Copy package files
 COPY package*.json ./
@@ -39,7 +35,7 @@ COPY . .
 RUN mkdir -p /app/config
 
 # Set executable permissions
-RUN chmod +x /app/scripts/*.sh
+RUN chmod +x /app/scripts/*.sh || true
 
 # Set environment variables
 ENV NODE_ENV=production
