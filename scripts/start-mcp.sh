@@ -2,7 +2,7 @@
 
 set -e
 
-echo "🏔️ Starting Himalayas MCP Docker Container..."
+echo "🏔️ Starting Himalayas + Docker Hub MCP Container..."
 
 # Load Doppler secrets if token is available
 if [ -n "$DOPPLER_TOKEN" ]; then
@@ -45,12 +45,38 @@ echo "🏔️ Connecting to Himalayas MCP server..."
 npx mcp-remote https://mcp.himalayas.app/sse &
 HIMALAYAS_PID=$!
 
+# Start Docker MCP server in background
+echo "🐳 Starting Docker MCP server..."
+if command -v uvx >/dev/null 2>&1; then
+    uvx docker-mcp &
+    DOCKER_PID=$!
+else
+    echo "⚠️ uvx not found, starting Docker MCP via Python..."
+    python -m docker_mcp &
+    DOCKER_PID=$!
+fi
+
+# Start the main Node.js server
+echo "🌐 Starting main HTTP server..."
+node src/server.js &
+SERVER_PID=$!
+
 echo "✅ All MCP servers started successfully!"
 echo "📊 Server PIDs:"
 echo "  Filesystem: $FILESYSTEM_PID"
 echo "  GitHub: $GITHUB_PID" 
 echo "  Memory: $MEMORY_PID"
 echo "  Himalayas: $HIMALAYAS_PID"
+echo "  Docker MCP: $DOCKER_PID"
+echo "  HTTP Server: $SERVER_PID"
 
-# Keep container running and monitor processes
-wait $HIMALAYAS_PID
+echo ""
+echo "🔗 Available Endpoints:"
+echo "  Health Check: http://localhost:3000/health"
+echo "  MCP Status: http://localhost:3000/mcp/status"
+echo "  Docker Hub API: http://localhost:3000/api/docker"
+echo ""
+echo "🏔️ Ready for job hunting with Docker Hub integration!"
+
+# Keep container running and monitor main processes
+wait $SERVER_PID

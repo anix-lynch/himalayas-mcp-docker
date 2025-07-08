@@ -2,14 +2,16 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies including Docker CLI
 RUN apk add --no-cache \
     python3 \
     py3-pip \
     git \
     curl \
     bash \
-    doppler
+    doppler \
+    docker-cli \
+    docker-compose
 
 # Install global npm packages
 RUN npm install -g \
@@ -17,6 +19,9 @@ RUN npm install -g \
     @modelcontextprotocol/server-github \
     @modelcontextprotocol/server-memory \
     mcp-remote
+
+# Install Python packages for Docker MCP
+RUN pip install docker-mcp
 
 # Copy package files
 COPY package*.json ./

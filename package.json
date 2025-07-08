@@ -1,7 +1,7 @@
 {
   "name": "himalayas-mcp-docker",
   "version": "1.0.0",
-  "description": "Dockerized Himalayas MCP server for remote job hunting",
+  "description": "Dockerized Himalayas MCP server for remote job hunting with Docker Hub integration",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -10,14 +10,17 @@
     "docker:push": "docker push anixlynch/himalayas-mcp:latest",
     "docker:run": "docker run -p 3000:3000 -e DOPPLER_TOKEN=$DOPPLER_TOKEN anixlynch/himalayas-mcp:latest",
     "mcp:start": "./scripts/start-mcp.sh",
-    "mcp:config": "./scripts/generate-config.sh"
+    "mcp:config": "./scripts/generate-config.sh",
+    "docker:hub": "docker search --limit 50",
+    "docker:pull": "docker pull"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "express": "^4.18.2",
     "axios": "^1.6.0",
     "dotenv": "^16.3.1",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "dockerode": "^4.0.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
@@ -27,9 +30,11 @@
     "himalayas",
     "remote-jobs",
     "docker",
+    "docker-hub",
     "job-hunting",
     "claude",
-    "ai-assistant"
+    "ai-assistant",
+    "container-management"
   ],
   "author": "anixlynch",
   "license": "MIT",
