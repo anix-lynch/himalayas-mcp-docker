@@ -18,7 +18,8 @@ RUN npm install -g \
     @modelcontextprotocol/server-filesystem \
     @modelcontextprotocol/server-github \
     @modelcontextprotocol/server-memory \
-    mcp-remote
+    mcp-remote \
+    concurrently
 
 # Install Python packages for Docker MCP
 RUN pip install docker-mcp
@@ -43,8 +44,8 @@ ENV NODE_ENV=production
 ENV MCP_HOME=/app
 ENV DOPPLER_TOKEN=${DOPPLER_TOKEN}
 
-# Expose port for MCP server
-EXPOSE 3000
+# Expose ports for both MCP server and OpenAPI server
+EXPOSE 3000 5050
 
-# Default command runs the Himalayas MCP setup
-CMD ["./scripts/start-mcp.sh"]
+# Start both the main MCP server and OpenAPI server
+CMD ["sh", "-c", "node openapi-server.js & ./scripts/start-mcp.sh"]

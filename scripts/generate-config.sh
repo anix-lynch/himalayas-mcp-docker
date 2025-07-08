@@ -2,13 +2,13 @@
 
 set -e
 
-echo "🔧 Generating Himalayas MCP Configuration with Docker Hub Support..."
+echo "🔧 Generating Enhanced Himalayas MCP Configuration with API Gateway Fallback..."
 
 # Create config directory if it doesn't exist
 mkdir -p /app/config
 
-# Generate Claude Desktop config with Himalayas MCP + Docker Hub MCP
-cat <<EOF > /app/config/claude_desktop_config_himalayas_dockerhub.json
+# Generate Claude Desktop config with full MCP stack + API Gateway
+cat <<EOF > /app/config/claude_desktop_config_god_mode.json
 {
   "mcpServers": {
     "filesystem": {
@@ -53,211 +53,134 @@ cat <<EOF > /app/config/claude_desktop_config_himalayas_dockerhub.json
         "DOCKER_HUB_USERNAME": "\${DOCKER_HUB_USERNAME}",
         "DOCKER_HUB_TOKEN": "\${DOCKER_HUB_TOKEN}"
       }
+    },
+    "api-gateway": {
+      "command": "uvx",
+      "args": ["mcp-api-gateway"],
+      "env": {
+        "mcp-api-gateway.api_1_name": "himalayas-fallback",
+        "mcp-api-gateway.api_1_swagger_url": "http://host.docker.internal:5050/himalayas-openapi.json",
+        "mcp-api-gateway.api_1_header_authorization": ""
+      }
+    },
+    "desktop-commander": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-desktop-commander"],
+      "env": {}
     }
   },
   "_profile_info": {
-    "name": "Himalayas + Docker Hub Job Hunt Profile",
-    "description": "Remote job hunting with Himalayas.app + Docker Hub container management",
-    "use_case": "Find remote jobs, manage Docker containers, push/pull images, track applications",
+    "name": "Himalayas God Mode - Full MCP Stack",
+    "description": "Complete remote job hunting with full MCP arsenal + API fallback",
+    "use_case": "Find remote jobs, manage Docker/GitHub, execute commands, API fallback when MCP fails",
     "servers": [
-      "himalayas: Access to remote job listings and company info from https://himalayas.app",
+      "himalayas: Primary remote job listings from https://mcp.himalayas.app/sse",
+      "api-gateway: Fallback API access via http://localhost:5050/himalayas-openapi.json",
       "docker-mcp: Full Docker operations - containers, images, networks, volumes",
       "docker-hub: Docker Hub integration - search, pull, push, manage repositories",
-      "github: Manage job search repositories and documentation", 
+      "github: GitHub repository management and operations",
+      "desktop-commander: Execute system commands and scripts",
       "filesystem: Local file management for resumes/cover letters",
       "memory: Track job applications and interview progress"
     ],
-    "docker_hub_features": [
-      "Search Docker Hub repositories",
-      "Pull and push container images", 
-      "Manage Docker Hub repositories",
-      "View image details and tags",
-      "Monitor download statistics"
+    "fallback_strategy": {
+      "primary": "Himalayas MCP server (mcp.himalayas.app/sse)",
+      "secondary": "API Gateway with local OpenAPI spec (localhost:5050)",
+      "tertiary": "Direct API calls via axios/fetch in custom tools"
+    },
+    "api_gateway_features": [
+      "Automatic fallback when MCP server unavailable",
+      "OpenAPI spec hosted locally on port 5050",
+      "Swagger UI available at /swagger-ui",
+      "Rate limiting and error handling"
     ],
-    "docker_operations": [
-      "List and manage containers",
-      "Build and tag images",
-      "Create and manage networks",
-      "Handle volumes and data",
-      "Monitor container logs"
-    ],
-    "docker_image": "anixlynch/himalayas-mcp:latest"
+    "docker_image": "anixlynch/himalayas-mcp:latest",
+    "ports": {
+      "mcp_server": 3000,
+      "openapi_server": 5050
+    }
   }
 }
 EOF
 
-echo "✅ Enhanced configuration generated: /app/config/claude_desktop_config_himalayas_dockerhub.json"
+echo "✅ God Mode configuration generated: /app/config/claude_desktop_config_god_mode.json"
 
-# Generate Docker Compose file with Docker Hub MCP
-cat <<EOF > /app/config/docker-compose-dockerhub.yml
-version: '3.8'
-
-services:
-  himalayas-mcp:
-    image: anixlynch/himalayas-mcp:latest
-    container_name: himalayas-mcp
-    ports:
-      - "3000:3000"
-    environment:
-      - DOPPLER_TOKEN=\${DOPPLER_TOKEN}
-      - NODE_ENV=production
-      - DOCKER_HUB_USERNAME=\${DOCKER_HUB_USERNAME}
-      - DOCKER_HUB_TOKEN=\${DOCKER_HUB_TOKEN}
-    volumes:
-      - ./data:/app/data
-      - ./config:/app/config
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
-    
-  # Docker Hub MCP Server
-  docker-hub-mcp:
-    image: mcp/docker
-    container_name: docker-hub-mcp
-    environment:
-      - DOCKER_HUB_USERNAME=\${DOCKER_HUB_USERNAME}
-      - DOCKER_HUB_TOKEN=\${DOCKER_HUB_TOKEN}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
-    depends_on:
-      - himalayas-mcp
-
-  # Optional: MCP Dashboard
-  mcp-dashboard:
-    image: nginx:alpine
-    container_name: mcp-dashboard
-    ports:
-      - "8080:80"
-    volumes:
-      - ./dashboard:/usr/share/nginx/html
-    depends_on:
-      - himalayas-mcp
-      - docker-hub-mcp
-    restart: unless-stopped
-
-volumes:
-  data:
-  config:
-EOF
-
-echo "✅ Docker Compose with Docker Hub MCP generated"
-
-# Generate enhanced CLI helper script
-cat <<EOF > /app/config/himalayas-dockerhub-cli.sh
+# Generate startup script for both services
+cat <<EOF > /app/config/start-full-stack.sh
 #!/bin/bash
 
-# Himalayas + Docker Hub MCP CLI Helper for Mac M4 Pro + Sequoia 15.5
+set -e
 
-case "\$1" in
-  "search-jobs")
-    echo "🔍 Searching jobs on Himalayas..."
-    docker run --rm -e DOPPLER_TOKEN=\$DOPPLER_TOKEN anixlynch/himalayas-mcp:latest npx mcp-remote https://mcp.himalayas.app/sse
-    ;;
-  "search-images")
-    echo "🐳 Searching Docker Hub images..."
-    docker search "\$2" --limit 25
-    ;;
-  "pull-image")
-    echo "📥 Pulling Docker image: \$2"
-    docker pull "\$2"
-    ;;
-  "push-image")
-    echo "📤 Pushing Docker image: \$2"
-    docker push "\$2"
-    ;;
-  "start")
-    echo "🚀 Starting Himalayas + Docker Hub MCP containers..."
-    docker-compose -f /app/config/docker-compose-dockerhub.yml up -d
-    ;;
-  "stop")
-    echo "🛑 Stopping MCP containers..."
-    docker-compose -f /app/config/docker-compose-dockerhub.yml down
-    ;;
-  "logs")
-    echo "📋 Showing container logs..."
-    docker logs himalayas-mcp -f
-    ;;
-  "docker-logs")
-    echo "📋 Showing Docker Hub MCP logs..."
-    docker logs docker-hub-mcp -f
-    ;;
-  "config")
-    echo "📂 Copying config to Claude Desktop..."
-    cp /app/config/claude_desktop_config_himalayas_dockerhub.json ~/Library/Application\\ Support/Claude/claude_desktop_config.json
-    echo "✅ Configuration updated. Restart Claude Desktop."
-    ;;
-  "status")
-    echo "📊 MCP Services Status:"
-    echo "Himalayas MCP: \$(docker ps --filter name=himalayas-mcp --format 'table {{.Status}}')"
-    echo "Docker Hub MCP: \$(docker ps --filter name=docker-hub-mcp --format 'table {{.Status}}')"
-    ;;
-  *)
-    echo "Usage: \$0 {search-jobs|search-images|pull-image|push-image|start|stop|logs|docker-logs|config|status}"
-    echo ""
-    echo "Commands:"
-    echo "  search-jobs           - Test Himalayas job search"
-    echo "  search-images <term>  - Search Docker Hub for images"
-    echo "  pull-image <image>    - Pull image from Docker Hub"
-    echo "  push-image <image>    - Push image to Docker Hub"
-    echo "  start                 - Start all MCP containers"
-    echo "  stop                  - Stop all MCP containers"
-    echo "  logs                  - View Himalayas MCP logs"
-    echo "  docker-logs           - View Docker Hub MCP logs"
-    echo "  config                - Update Claude Desktop config"
-    echo "  status                - Show all services status"
-    echo ""
-    echo "Examples:"
-    echo "  \$0 search-images 'node'"
-    echo "  \$0 pull-image 'mcp/memory'"
-    echo "  \$0 push-image 'anixlynch/my-app:latest'"
-    ;;
-esac
+echo "🚀 Starting Himalayas Full Stack (MCP + API Gateway)"
+
+# Start OpenAPI server in background
+echo "📋 Starting OpenAPI server on port 5050..."
+node /app/openapi-server.js &
+OPENAPI_PID=\$!
+
+# Wait for OpenAPI server to be ready
+sleep 3
+
+# Test OpenAPI server
+if curl -s http://localhost:5050/health > /dev/null; then
+    echo "✅ OpenAPI server ready at http://localhost:5050"
+else
+    echo "⚠️ OpenAPI server may not be ready, continuing anyway..."
+fi
+
+# Start main MCP stack
+echo "🏔️ Starting MCP servers..."
+/app/scripts/start-mcp.sh &
+MCP_PID=\$!
+
+echo "📊 Service PIDs:"
+echo "  OpenAPI Server: \$OPENAPI_PID"
+echo "  MCP Stack: \$MCP_PID"
+
+# Keep both services running
+wait \$MCP_PID
 EOF
 
-chmod +x /app/config/himalayas-dockerhub-cli.sh
+chmod +x /app/config/start-full-stack.sh
 
-echo "✅ Enhanced CLI helper script generated: /app/config/himalayas-dockerhub-cli.sh"
-
-# Generate Docker Hub MCP specific configuration for different scenarios
-cat <<EOF > /app/config/docker-hub-mcp-standalone.json
+# Generate API Gateway specific config
+cat <<EOF > /app/config/api-gateway-standalone.json
 {
   "mcpServers": {
-    "docker-hub": {
-      "command": "docker",
-      "args": [
-        "run", 
-        "-i", 
-        "--rm", 
-        "-v", "/var/run/docker.sock:/var/run/docker.sock",
-        "mcp/docker"
-      ],
+    "api-gateway": {
+      "command": "uvx",
+      "args": ["mcp-api-gateway"],
       "env": {
-        "DOCKER_HUB_USERNAME": "\${DOCKER_HUB_USERNAME}",
-        "DOCKER_HUB_TOKEN": "\${DOCKER_HUB_TOKEN}"
+        "mcp-api-gateway.api_1_name": "himalayas-fallback",
+        "mcp-api-gateway.api_1_swagger_url": "http://host.docker.internal:5050/himalayas-openapi.json",
+        "mcp-api-gateway.api_1_header_authorization": ""
       }
     }
   },
-  "_docker_hub_capabilities": {
-    "search": "Search Docker Hub repositories and images",
-    "pull": "Pull images from Docker Hub to local machine",
-    "push": "Push local images to Docker Hub repositories", 
-    "manage": "Manage Docker Hub repositories and tags",
-    "monitor": "Monitor image downloads and statistics",
-    "authenticate": "Secure authentication with Docker Hub"
+  "_api_gateway_config": {
+    "purpose": "Fallback API access for Himalayas when MCP server is unavailable",
+    "endpoints": {
+      "jobs": "GET /jobs/api - List remote jobs with pagination",
+      "companies": "GET /companies/api - List companies offering remote work"
+    },
+    "local_server": "http://localhost:5050/himalayas-openapi.json",
+    "docker_internal": "http://host.docker.internal:5050/himalayas-openapi.json"
   }
 }
 EOF
 
-echo "✅ Docker Hub MCP standalone config generated"
-echo "🏔️ Himalayas + Docker Hub MCP configuration complete!"
+echo "✅ API Gateway config generated"
+echo "🏔️ Enhanced Himalayas MCP configuration complete!"
 echo ""
-echo "🐳 Docker Hub MCP Features:"
-echo "  - Search Docker Hub repositories"
-echo "  - Pull/push container images"
-echo "  - Manage repositories and tags"
-echo "  - Monitor image statistics"
-echo "  - Secure authentication"
+echo "🎯 Available Configurations:"
+echo "  1. claude_desktop_config_god_mode.json - Full MCP stack with API fallback"
+echo "  2. api-gateway-standalone.json - API Gateway only for testing"
 echo ""
-echo "🔧 Setup your Docker Hub credentials:"
-echo "  export DOCKER_HUB_USERNAME=your_username"
-echo "  export DOCKER_HUB_TOKEN=your_access_token"
+echo "🚀 Services:"
+echo "  Port 3000: Main MCP server"
+echo "  Port 5050: OpenAPI specification server"
+echo ""
+echo "🔧 API Gateway Setup:"
+echo "  Name: himalayas-fallback"
+echo "  Swagger URL: http://host.docker.internal:5050/himalayas-openapi.json"
+echo "  Purpose: Fallback when mcp.himalayas.app/sse is unavailable"

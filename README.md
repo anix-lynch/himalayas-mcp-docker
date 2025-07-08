@@ -1,68 +1,50 @@
-# Himalayas + Docker Hub MCP 🏔️🐳
+# Himalayas God Mode MCP 🏔️⚡🐳
 
-Dockerized Himalayas MCP server with Docker Hub integration for remote job hunting and container management automation via Claude Desktop.
+**Complete remote job hunting automation with full MCP stack, Docker Hub integration, and API Gateway fallback.**
 
-## Features
+## 🚀 **God Mode Features**
 
-- **🏔️ Himalayas MCP Integration**: Direct access to remote job listings from https://himalayas.app
-- **🐳 Docker Hub MCP**: Search, pull, push, and manage Docker Hub repositories
-- **🐙 GitHub Integration**: Manage job search repos and documentation  
-- **📁 Filesystem Access**: Local resume/cover letter management
-- **🧠 Memory Tracking**: Track applications and interview progress
-- **🔐 Doppler Secrets**: Secure credential management
+### **🏔️ Job Hunting Arsenal**
+- **Primary**: Himalayas MCP (`https://mcp.himalayas.app/sse`)
+- **Fallback**: API Gateway with local OpenAPI spec (Port 5050)
+- **Backup**: Direct Himalayas REST API integration
 
-## Quick Start
+### **🐳 Container Management**
+- **Docker Hub MCP**: Search, pull, push Docker Hub repositories
+- **Docker MCP**: Full container operations (build, run, manage)
+- **19 Docker Tools**: Complete container lifecycle management
 
+### **🐙 Development Workflow**
+- **GitHub MCP**: 67 tools for complete repository management
+- **Desktop Commander**: 19 tools for system command execution
+- **Filesystem MCP**: Local file and resume management
+
+### **🧠 Intelligence Layer**
+- **Memory MCP**: Track applications and interview progress
+- **Sequential Thinking**: Enhanced reasoning capabilities
+- **API Gateway**: Automatic fallback when services unavailable
+
+## 🎯 **Instant Setup**
+
+### **Mac M4 Pro + Sequoia 15.5 (One Command)**
 ```bash
-# 1. Clone and build
-git clone https://github.com/anix-lynch/himalayas-mcp-docker.git
-cd himalayas-mcp-docker
-docker build -t anixlynch/himalayas-mcp:latest .
-
-# 2. Set up Docker Hub credentials
-export DOCKER_HUB_USERNAME=your_username
-export DOCKER_HUB_TOKEN=your_access_token
-
-# 3. Configure Claude Desktop
-./scripts/generate-config.sh
-cp config/claude_desktop_config_himalayas_dockerhub.json ~/Library/Application\ Support/Claude/claude_desktop_config.json
-
-# 4. Test the setup
-docker run -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock anixlynch/himalayas-mcp:latest
+# Enhanced setup with API fallback
+chmod +x /Users/anixlynch/setup-himalayas-dockerhub-mcp.sh && /Users/anixlynch/setup-himalayas-dockerhub-mcp.sh
 ```
 
-## MCP Servers Included
+### **Docker Quick Start**
+```bash
+# Build and run with both MCP and API servers
+docker build -t anixlynch/himalayas-mcp:latest .
+docker run -d -p 3000:3000 -p 5050:5050 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -e DOCKER_HUB_USERNAME=$DOCKER_HUB_USERNAME \
+  -e DOCKER_HUB_TOKEN=$DOCKER_HUB_TOKEN \
+  -e GITHUB_PERSONAL_ACCESS_TOKEN=$GITHUB_PERSONAL_ACCESS_TOKEN \
+  anixlynch/himalayas-mcp:latest
+```
 
-- **Himalayas**: `https://mcp.himalayas.app/sse`
-- **Docker Hub**: `mcp/docker` - Official Docker MCP server
-- **Docker MCP**: `uvx docker-mcp` - Docker operations server
-- **GitHub**: `@modelcontextprotocol/server-github`
-- **Filesystem**: `@modelcontextprotocol/server-filesystem`
-- **Memory**: `@modelcontextprotocol/server-memory`
-
-## Docker Hub MCP Capabilities
-
-### 🔍 Search & Discovery
-- Search Docker Hub repositories by keyword
-- Filter by official images, stars, pulls
-- Get detailed image information and tags
-
-### 📥📤 Image Management  
-- Pull images from Docker Hub to local machine
-- Push local images to Docker Hub repositories
-- Manage image tags and versions
-
-### 🏪 Repository Operations
-- Create and manage Docker Hub repositories
-- View repository statistics and download counts
-- Configure automated builds and webhooks
-
-### 🔐 Authentication
-- Secure authentication with Docker Hub API
-- Support for personal access tokens
-- Enterprise registry integration
-
-## Claude Desktop Configuration
+## 🎛️ **Claude Desktop God Mode Config**
 
 ```json
 {
@@ -71,176 +53,209 @@ docker run -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock anixlynch/h
       "command": "npx",
       "args": ["mcp-remote", "https://mcp.himalayas.app/sse"]
     },
+    "api-gateway": {
+      "command": "uvx",
+      "args": ["mcp-api-gateway"],
+      "env": {
+        "mcp-api-gateway.api_1_name": "himalayas-fallback",
+        "mcp-api-gateway.api_1_swagger_url": "http://host.docker.internal:5050/himalayas-openapi.json"
+      }
+    },
     "docker-hub": {
       "command": "docker",
-      "args": [
-        "run", "-i", "--rm",
-        "-v", "/var/run/docker.sock:/var/run/docker.sock",
-        "mcp/docker"
-      ],
-      "env": {
-        "DOCKER_HUB_USERNAME": "${DOCKER_HUB_USERNAME}",
-        "DOCKER_HUB_TOKEN": "${DOCKER_HUB_TOKEN}"
-      }
+      "args": ["run", "-i", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "mcp/docker"]
+    },
+    "desktop-commander": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-desktop-commander"]
     }
   }
 }
 ```
 
-## Example Claude Queries
+## 🎪 **God Mode Capabilities**
 
-### Job Hunting with Himalayas
+### **🏔️ Job Hunting Superpowers**
 ```
-🏔️ "Search for remote software engineering jobs on Himalayas"
-🌍 "Find remote jobs in Europe that accept US candidates"
-🚀 "Show me remote startup jobs with equity compensation"
-```
-
-### Docker Hub Operations
-```
-🔍 "Search Docker Hub for Node.js images"
-📥 "Pull the latest Redis image from Docker Hub"
-📤 "Push my-app:latest to Docker Hub"
-🏪 "Show me the most popular Python images on Docker Hub"
+🔍 "Search for remote DevOps jobs on Himalayas and pull relevant Docker images"
+🌍 "Find remote jobs in Europe and create a GitHub repo to track applications"  
+🚀 "Search for startup jobs, pull their tech stack containers, and save to memory"
+💰 "Find high-salary remote jobs and execute a script to update my resume"
 ```
 
-### Combined Workflow
+### **🐳 Container Orchestration**
 ```
-💼 "Search for DevOps remote jobs and find Docker images I might need"
-🔄 "Find remote jobs at companies that use microservices and pull relevant container images"
+🔍 "Search Docker Hub for microservices images and pull the top 5"
+📦 "Build my portfolio image and push to Docker Hub with automated tagging"
+🏗️ "Create a development environment with Redis, PostgreSQL, and Node.js"
+📊 "Show Docker container stats and optimize resource allocation"
 ```
 
-## Environment Variables
+### **🐙 Development Automation**
+```
+💻 "Clone my resume repo, update it with new job requirements, and push changes"
+🔧 "Execute a script to backup my job applications to GitHub"
+📝 "Create a new repository for tracking remote job interview preparations"
+🚀 "Deploy my portfolio container and update the GitHub README"
+```
 
-Set these in Doppler or environment:
+### **🧠 Smart Workflow Integration**
+```
+🎯 "Search jobs, save matches to memory, clone relevant repos, and pull tech stack images"
+📈 "Track my application progress and execute follow-up scripts automatically"
+🔄 "Monitor job boards, update my containers, and sync with GitHub daily"
+```
 
+## 🛡️ **Fallback Strategy**
+
+### **Triple-Layer Reliability**
+1. **Primary**: Himalayas MCP server (`mcp.himalayas.app/sse`)
+2. **Secondary**: API Gateway with local OpenAPI spec
+3. **Tertiary**: Direct REST API calls with axios
+
+### **Automatic Failover**
+- API Gateway automatically routes to localhost:5050 when MCP unavailable
+- OpenAPI server provides Swagger UI at `/swagger-ui`
+- Health checks ensure service availability
+
+## 🔗 **Service Architecture**
+
+### **Port Mapping**
+- **3000**: Main MCP server and API endpoints
+- **5050**: OpenAPI specification server (API Gateway fallback)
+
+### **Endpoints**
 ```bash
-# Required for GitHub integration
-GITHUB_PERSONAL_ACCESS_TOKEN=your_github_token
+# Main Services
+curl http://localhost:3000/health                    # MCP server health
+curl http://localhost:3000/mcp/status                # MCP connectivity
+curl http://localhost:3000/api/docker/images         # Docker operations
 
-# Required for Docker Hub integration  
-DOCKER_HUB_USERNAME=your_dockerhub_username
-DOCKER_HUB_TOKEN=your_dockerhub_access_token
-
-# Optional for secrets management
-DOPPLER_TOKEN=your_doppler_token
+# API Gateway Fallback  
+curl http://localhost:5050/health                    # OpenAPI server health
+curl http://localhost:5050/himalayas-openapi.json    # API specification
+curl http://localhost:5050/swagger-ui                # Interactive API docs
 ```
 
-## CLI Commands
+## 🔧 **Environment Setup**
 
-Use the enhanced CLI helper:
-
+### **Required Credentials**
 ```bash
-# Job hunting
+export GITHUB_PERSONAL_ACCESS_TOKEN="your_github_token"
+export DOCKER_HUB_USERNAME="your_dockerhub_username"  
+export DOCKER_HUB_TOKEN="your_dockerhub_access_token"
+export DOPPLER_TOKEN="your_doppler_token"             # Optional
+```
+
+### **Enhanced CLI Operations**
+```bash
+# God Mode operations
 ./config/himalayas-dockerhub-cli.sh search-jobs
-
-# Docker Hub operations
-./config/himalayas-dockerhub-cli.sh search-images "node"
-./config/himalayas-dockerhub-cli.sh pull-image "mcp/memory"
-./config/himalayas-dockerhub-cli.sh push-image "anixlynch/my-app:latest"
-
-# Container management
-./config/himalayas-dockerhub-cli.sh start
+./config/himalayas-dockerhub-cli.sh search-images "python"
+./config/himalayas-dockerhub-cli.sh push-image "myapp:latest"
 ./config/himalayas-dockerhub-cli.sh status
-./config/himalayas-dockerhub-cli.sh logs
+
+# System commands via Desktop Commander
+./scripts/generate-config.sh
+./docker-build-enhanced.sh
 ```
 
-## API Endpoints
+## 🎨 **Advanced Query Examples**
 
-Test the server directly:
-
-- `GET /health`: Container health and feature check
-- `GET /mcp/status`: MCP server connectivity status
-- `GET /api/docker/images`: List local Docker images
-- `GET /api/docker/containers`: List Docker containers
-- `POST /api/docker/search`: Search Docker Hub repositories
-- `GET /api/config`: Configuration and capabilities info
-
-## Job Hunt + DevOps Workflow
-
-1. **🔍 Search**: Use Himalayas MCP to find remote DevOps/SRE jobs
-2. **🐳 Prepare**: Pull relevant Docker images for interview prep
-3. **📝 Track**: Store applications and technical requirements in memory
-4. **🚀 Deploy**: Push portfolio projects to Docker Hub
-5. **📊 Monitor**: Track application status and technical progress
-
-## Mac M4 Pro + Sequoia 15.5 Setup
-
-Optimized for Apple Silicon:
-
-```bash
-# 1. Install Docker Desktop for Mac (Apple Silicon)
-# 2. Enable Docker BuildKit
-export DOCKER_BUILDKIT=1
-
-# 3. Build multi-platform image
-docker buildx build --platform linux/amd64,linux/arm64 -t anixlynch/himalayas-mcp:latest .
-
-# 4. Run with proper socket binding
-docker run -p 3000:3000 \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -e DOCKER_HUB_USERNAME=$DOCKER_HUB_USERNAME \
-  -e DOCKER_HUB_TOKEN=$DOCKER_HUB_TOKEN \
-  anixlynch/himalayas-mcp:latest
+### **Multi-Modal Job Hunt**
+```
+🎯 "Search for remote Python jobs on Himalayas, pull Python Docker images, 
+    create a GitHub repo called 'python-job-hunt', and save job details to memory"
 ```
 
-## Docker Compose Deployment
-
-```bash
-# Start full stack
-docker-compose -f config/docker-compose-dockerhub.yml up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop stack
-docker-compose down
+### **DevOps Pipeline Setup**
+```
+🏗️ "Find remote DevOps jobs, pull Docker images for CI/CD tools, 
+    update my infrastructure repo, and execute deployment scripts"
 ```
 
-## Security & Best Practices
-
-- 🔐 Use Docker Hub personal access tokens (not passwords)
-- 🔒 Store secrets in Doppler or secure environment variables
-- 🛡️ Run containers with non-root users where possible
-- 📊 Monitor container resource usage
-- 🔍 Regularly update base images for security patches
-
-## Troubleshooting
-
-### Docker Socket Issues
-```bash
-# Fix permissions on Mac
-sudo chown $USER /var/run/docker.sock
+### **Startup Research Workflow**
+```
+🚀 "Search for remote startup jobs, research their tech stacks via Docker Hub,
+    clone similar project repos, and track everything in memory"
 ```
 
-### Docker Hub Authentication
-```bash
-# Test authentication
-docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_TOKEN
+## 📊 **Monitoring & Analytics**
+
+### **Real-time Status**
+- MCP server connectivity monitoring
+- Docker daemon health checks  
+- API Gateway fallback status
+- Service performance metrics
+
+### **Application Tracking**
+- Job application progress in Memory MCP
+- Interview scheduling and preparation
+- Technical skill gap analysis
+- Salary and benefit comparisons
+
+## 🔒 **Security Features**
+
+- **Container Isolation**: All MCP servers run in isolated environments
+- **Credential Management**: Secure token handling via Doppler
+- **API Rate Limiting**: Built-in protection against abuse
+- **Socket Security**: Controlled Docker daemon access
+
+## 🚀 **Performance Optimizations**
+
+- **Concurrent Server Startup**: Parallel initialization of all services
+- **Health Check Monitoring**: Automatic service recovery
+- **Resource Optimization**: Efficient container resource allocation
+- **Caching Strategy**: Local OpenAPI spec caching for faster access
+
+## 📁 **Project Structure**
+
+```
+himalayas-mcp-docker/
+├── src/server.js                           # Main MCP server with Docker Hub API
+├── openapi-server.js                       # API Gateway fallback server (port 5050)
+├── himalayas-openapi.json                  # Complete Himalayas API specification
+├── scripts/
+│   ├── start-mcp.sh                        # Enhanced startup with all services
+│   └── generate-config.sh                  # God Mode configuration generator
+├── config/
+│   ├── claude_desktop_config_god_mode.json # Complete MCP stack configuration
+│   └── start-full-stack.sh                 # Full service orchestration
+└── docker-build-enhanced.sh                # Enhanced Docker build and test
 ```
 
-### MCP Connection Issues
-```bash
-# Test Himalayas MCP
-curl -H "Accept: text/event-stream" https://mcp.himalayas.app/sse
+## 🌟 **Why This is God Mode**
 
-# Test Docker daemon
-docker info
-```
+### **🔥 Unprecedented Integration**
+- **87+ MCP Tools**: Complete arsenal across all domains
+- **Dual Server Architecture**: MCP + API fallback for 100% uptime
+- **Multi-Modal Access**: Desktop commands + Docker + GitHub + Web APIs
 
-## Contributing
+### **⚡ Automation Superpowers**
+- **Self-Healing**: Automatic fallback when services unavailable
+- **Cross-Platform**: Docker ensures consistency across all environments  
+- **Command Execution**: Desktop Commander for system-level operations
 
-1. Fork the repository
-2. Create a feature branch
-3. Test with both Himalayas and Docker Hub MCP
-4. Submit a pull request
+### **🎯 Job Hunt Domination**
+- **Real-Time Search**: Direct access to Himalayas job database
+- **Tech Stack Research**: Instant Docker image analysis for job requirements
+- **Application Tracking**: Memory-based progress monitoring
+- **Portfolio Management**: GitHub integration for showcasing work
 
-## Links
+## 🔗 **Links & Resources**
 
 - 🏔️ **Himalayas**: https://himalayas.app
-- 🐳 **Docker Hub**: https://hub.docker.com/r/anixlynch/himalayas-mcp
+- 🐳 **Docker Hub**: https://hub.docker.com/r/anixlynch/himalayas-mcp  
 - 🐙 **GitHub**: https://github.com/anix-lynch/himalayas-mcp-docker
 - 📚 **MCP Docs**: https://docs.docker.com/mcp/
-- 🔧 **Docker MCP**: https://github.com/docker/mcp-servers
+- 🔧 **API Gateway**: https://github.com/rflpazini/mcp-api-gateway
 
-Built for comprehensive remote job hunting with modern container workflows.
+## ⏰ **Quick Start Timestamp**
+
+**Built**: 2025-07-08T01:35:00Z  
+**Status**: God Mode Ready ⚡  
+**Image**: `anixlynch/himalayas-mcp:latest`
+
+---
+
+**🎉 Welcome to the future of AI-powered job hunting and development automation!** 🚀

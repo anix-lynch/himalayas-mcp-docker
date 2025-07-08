@@ -1,16 +1,18 @@
 {
   "name": "himalayas-mcp-docker",
-  "version": "1.0.0",
-  "description": "Dockerized Himalayas MCP server for remote job hunting with Docker Hub integration",
+  "version": "2.0.0",
+  "description": "Dockerized Himalayas MCP server with Docker Hub integration and API Gateway fallback",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
+    "openapi": "node openapi-server.js",
     "docker:build": "docker build -t anixlynch/himalayas-mcp:latest .",
     "docker:push": "docker push anixlynch/himalayas-mcp:latest",
-    "docker:run": "docker run -p 3000:3000 -e DOPPLER_TOKEN=$DOPPLER_TOKEN anixlynch/himalayas-mcp:latest",
+    "docker:run": "docker run -p 3000:3000 -p 5050:5050 -e DOPPLER_TOKEN=$DOPPLER_TOKEN anixlynch/himalayas-mcp:latest",
     "mcp:start": "./scripts/start-mcp.sh",
     "mcp:config": "./scripts/generate-config.sh",
+    "api:start": "node openapi-server.js",
     "docker:hub": "docker search --limit 50",
     "docker:pull": "docker pull"
   },
@@ -20,7 +22,8 @@
     "axios": "^1.6.0",
     "dotenv": "^16.3.1",
     "winston": "^3.11.0",
-    "dockerode": "^4.0.2"
+    "dockerode": "^4.0.2",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
@@ -34,7 +37,10 @@
     "job-hunting",
     "claude",
     "ai-assistant",
-    "container-management"
+    "container-management",
+    "api-gateway",
+    "openapi",
+    "swagger"
   ],
   "author": "anixlynch",
   "license": "MIT",
