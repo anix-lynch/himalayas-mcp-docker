@@ -1,48 +1,12 @@
-FROM node:20-alpine
-
+FROM node:22-alpine AS builder
 WORKDIR /app
-
-# Install system dependencies
-RUN apk add --no-cache \
-    python3 \
-    py3-pip \
-    git \
-    curl \
-    bash \
-    docker-cli \
-    docker-compose
-
-# Install global npm packages
-RUN npm install -g \
-    @modelcontextprotocol/server-filesystem \
-    @modelcontextprotocol/server-github \
-    @modelcontextprotocol/server-memory \
-    mcp-remote
-
-# Install Python packages for Docker MCP
-RUN pip install docker-mcp --break-system-packages || pip install docker-mcp
-
-# Copy package files
 COPY package*.json ./
+RUN npm install --omit=dev
+COPY index.js .
 
-# Install project dependencies
-RUN npm install
-
-# Copy project files
-COPY . .
-
-# Create MCP config directory
-RUN mkdir -p /app/config
-
-# Set executable permissions
-RUN chmod +x /app/scripts/*.sh || true
-
-# Set environment variables
-ENV NODE_ENV=production
-ENV MCP_HOME=/app
-
-# Expose ports for both MCP server and OpenAPI server
-EXPOSE 3000 5050
-
-# Start both the main MCP server and OpenAPI server
-CMD ["sh", "-c", "node openapi-server.js & ./scripts/start-mcp.sh"]
+FROM node:22-alpine
+WORKDIR /app
+COPY --from=builder /app /app
+RUN addgroup -S mcpuser && adduser -S mcpuser -G mcpuser
+USER mcpuser
+CMD ["node", "index.js"]
